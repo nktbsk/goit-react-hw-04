@@ -1,72 +1,68 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import Gallery from "./Components/Gallery/Gallery";
+import SearchBar from "./Components/SearchBar/SearchBar";
+import ImageGallery from "./Components/ImageGallery/ImageGallery";
+import ImageModal from "./Components/ImageModal/ImageModal";
+import Loader from "./Components/Loader/Loader";
 import LoadMoreBtn from "./Components/LoadMoreBtn/LoadMoreBtn";
-import Header from "./Components/Header/Header";
+import { fetchImages } from "./api";
+import { Toaster, toast } from "react-hot-toast";
 
 const App = () => {
   const [images, setImages] = useState([]);
   const [query, setQuery] = useState("");
-  const [searchQuery, setSearchQuery] = useState(query);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
-    const searchImages = async () => {
+    if (!query) return;
+
+    const loadImages = async () => {
+      setLoading(true);
       try {
-        const { data } = await axios.get(
-          "https://api.unsplash.com/search/photos",
-          {
-            headers: {
-              Authorization:
-                "Client-ID tiMMCYYTmgvcAIKgv6TxUXtwKw0rm05ydEpPZ846qow",
-            },
-            params: {
-              query: searchQuery,
-              page,
-              per_page: 12,
-            },
-          }
-        );
-        if (page === 1) {
-          setImages(data.results);
-        } else {
-          setImages((prevImages) => [...prevImages, ...data.results]);
-        }
+        const data = await fetchImages(query, page);
+        setImages((prev) => [...prev, ...data.results]);
+        setHasMore(page < data.total_pages);
       } catch (error) {
-        console.error("Ошибка при поиске изображений:", error);
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    searchImages();
-  }, [searchQuery, page]);
+    loadImages();
+  }, [query, page]);
 
-  // Функция для выполнения поиска при нажатии кнопки или нажатии Enter
-  const handleSearch = () => {
-    setPage(1);
-    setSearchQuery(query);
-  };
-
-  // Функция для очистки всех данных
-  const handleClear = () => {
-    setQuery("");
+  const handleSearch = (newQuery) => {
+    if (newQuery.trim() === "") {
+      toast.error("Please enter a search term!");
+      return;
+    }
+    setQuery(newQuery);
     setImages([]);
+    setPage(1);
   };
 
-  const loadMore = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
+  const handleLoadMore = () => setPage((prev) => prev + 1);
+
+  const openModal = (image) => setModalImage(image);
+  const closeModal = () => setModalImage(null);
 
   return (
     <div>
-      <Header
-        query={query}
-        setQuery={setQuery}
-        onSearch={handleSearch}
-        onClear={handleClear}
-        hasImages={images.length > 0}
-      />
-      <Gallery images={images} />
-      {images.length > 0 && <LoadMoreBtn loadMore={loadMore} />}
+      <SearchBar onSubmit={handleSearch} />
+      <ImageGallery images={images} onClick={openModal} />
+      {loading && <Loader />}
+      {hasMore && !loading && <LoadMoreBtn onClick={handleLoadMore} />}
+      {modalImage && (
+        <ImageModal
+          isOpen={!!modalImage}
+          onRequestClose={closeModal}
+          image={modalImage}
+        />
+      )}
+      <Toaster position="top-right" reverseOrder={false} />{" "}
     </div>
   );
 };
