@@ -1,0 +1,29 @@
+.wrapper {
+  width: 450px;
+  margin-top: 20px;
+}
+.img {
+  width: 450px;
+  height: 300px;
+  object-fit: cover;
+}
+.wrapperInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  gap: 4px;
+}
+.author {
+  display: flex;
+  gap: 4px;
+}
+.likes {
+  display: flex;
+  gap: 4px;
+}
+.authorIcon {
+  font-size: 20px;
+}
+.likeIcon {
+  font-size: 20px;
+}
