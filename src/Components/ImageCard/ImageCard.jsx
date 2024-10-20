@@ -11,3 +11,4 @@ const ImageCard = ({ image }) => (
 );
 
 export default ImageCard;
+// pizdec
