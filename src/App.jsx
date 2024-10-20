@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import SearchBar from "./components/SearchBar/SearchBar";
+import SearchBar from "./hyi/SearchBar/SearchBar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
-import ImageModal from "./components/ImageModal/ImageModal";
-import Loader from "./components/Loader/Loader";
-import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "./hyi/ImageModal/ImageModal";
+import Loader from "./hyi/Loader/Loader";
+import LoadMoreBtn from "./hyi/LoadMoreBtn/LoadMoreBtn";
 import { fetchImages } from "./api";
 import { Toaster, toast } from "react-hot-toast";
 
