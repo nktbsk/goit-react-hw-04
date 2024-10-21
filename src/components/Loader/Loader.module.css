@@ -1,4 +1,6 @@
 .loader {
-  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  margin: 20px;
   text-align: center;
 }
